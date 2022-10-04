@@ -1,6 +1,6 @@
 {
-  "name": "yappie",
-  "description": "Updates on arXiv cs.* (unofficial).",
+  "name": "arxiv-to-twitter",
+  "description": "Tweets the recent papers published on arXiv.org.",
   "author": "Yuichi Goto",
   "dependencies": {
     "luxon": "^3.0.4",
@@ -19,13 +19,13 @@
   "engines": {
     "node": "18.x"
   },
-  "homepage": "https://github.com/yasaichi/yappie#readme",
+  "homepage": "https://github.com/yasaichi/arxiv-to-twitter#readme",
   "license": "MIT",
   "main": "src/index.ts",
   "private": true,
   "repository": {
     "type": "git",
-    "url": "git+ssh://git@github.com/yasaichi/yappie.git"
+    "url": "git+ssh://git@github.com/yasaichi/arxiv-to-twitter.git"
   },
   "scripts": {
     "start": "ts-node src/index.ts"
