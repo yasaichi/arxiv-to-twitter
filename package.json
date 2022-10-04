@@ -3,11 +3,17 @@
   "description": "Updates on arXiv cs.* (unofficial).",
   "author": "Yuichi Goto",
   "dependencies": {
-    "ts-node": "^10.9.1"
+    "luxon": "^3.0.4",
+    "rss-parser": "^3.12.0",
+    "truncate": "^3.0.0",
+    "ts-node": "^10.9.1",
+    "twitter": "^1.7.1"
   },
   "devDependencies": {
     "@tsconfig/node18": "^1.0.1",
+    "@types/luxon": "^3.0.1",
     "@types/node": "^18.8.1",
+    "@types/twitter": "^1.7.1",
     "typescript": "^4.8.4"
   },
   "engines": {
