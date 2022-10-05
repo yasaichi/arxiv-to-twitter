@@ -1,8 +1,9 @@
 import { Category, Paper } from './Paper';
+import { DateTime } from 'luxon';
 
 export type Criteria = {
   category: Category;
-  limit: number;
+  publishedAfter: DateTime;
 };
 
 export interface PaperRepository {

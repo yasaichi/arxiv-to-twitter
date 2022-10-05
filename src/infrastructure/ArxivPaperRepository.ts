@@ -3,8 +3,10 @@ import Parser from 'rss-parser';
 import { DateTime } from 'luxon';
 import { Criteria, PaperRepository } from '../domain/PaperRepository';
 
+const CHUNK_SIZE = 100;
 // For details, see https://arxiv.org/help/api/user-manual
 const DEFAULT_PARAMS = {
+  max_results: CHUNK_SIZE,
   sortBy: 'submittedDate',
   sortOrder: 'descending',
 };
@@ -29,22 +31,39 @@ export class ArxivPaperRepository implements PaperRepository {
   }
 
   async matching(criteria: Criteria): Promise<Paper[]> {
-    const feedUrl = this.buildUrlWithParams(this.baseUrl, {
-      max_results: criteria.limit,
-      search_query: `cat:${criteria.category}`,
-    });
-    const feed = await this.client.parseURL(feedUrl.toString());
+    const papers: Paper[] = [];
+    let page = 0;
+    let resultSize = 0;
 
-    return feed.items.map(
-      (item) =>
-        new Paper({
-          category: item.category.$.term,
-          submittedAt: DateTime.fromISO(item.pubDate!),
-          summary: this.normalizeSummary(item.summary!),
-          title: this.normalizeTitle(item.title!),
-          url: new URL(item.link!),
-        })
-    );
+    paginationLoop: do {
+      const feedUrl = this.buildUrlWithParams(this.baseUrl, {
+        search_query: `cat:${criteria.category}`,
+        start: page * CHUNK_SIZE,
+      });
+      const feed = await this.client.parseURL(feedUrl.toString());
+
+      for (const item of feed.items) {
+        const publishedAt = DateTime.fromISO(item.pubDate!);
+        if (publishedAt.diff(criteria.publishedAfter).milliseconds < 0) {
+          break paginationLoop;
+        }
+
+        papers.push(
+          new Paper({
+            category: item.category.$.term,
+            publishedAt: DateTime.fromISO(item.pubDate!),
+            summary: this.normalizeSummary(item.summary!),
+            title: this.normalizeTitle(item.title!),
+            url: new URL(item.link!),
+          })
+        );
+      }
+
+      page++;
+      resultSize = feed.items.length;
+    } while (resultSize > 0);
+
+    return papers;
   }
 
   private buildUrlWithParams(base: URL, params: { [key: string]: any }): URL {
